@@ -14,10 +14,10 @@ def goToFootHillWEB(driver):
 
 def loginToFootHill(driver):
     userName = driver.find_element_by_id("user")
-    userName.send_keys("*****")
+    userName.send_keys("20351058")
 
     password = driver.find_element_by_id("pass")
-    password.send_keys("*****")
+    password.send_keys("Emergency!1")
 
     driver.find_element_by_name("login_btn").click()
 
@@ -53,26 +53,26 @@ def selectSpringFootHillDropDown(driver):
 
 def clickClassSearch(driver):
 
-    def find1(driver):
+    def find(driver):
         element = driver.find_element_by_xpath("//input[@name='REG_BTN' and @value='Class Search']")
         if element:
             return element
         else:
             return False
 
-    element = WebDriverWait(driver, 10).until(find1)
+    element = WebDriverWait(driver, 10).until(find)
     element.click()
 
 def chooseComputerScienceOption(driver):
 
-    def find2(driver):
+    def find(driver):
         element = driver.find_element_by_xpath("//option[@value='C S']")
         if element:
             return element
         else:
             return False
 
-    element = WebDriverWait(driver, 10).until(find2)
+    element = WebDriverWait(driver, 10).until(find)
     element.click()
 
 def clickCourseSearch(driver):
@@ -82,7 +82,7 @@ def clickCourseSearch(driver):
 def clickViewSections(driver):
 
     #check that the right button has loaded
-    def find3(driver):
+    def find(driver):
         element = driver.find_elements_by_class_name("datadisplaytable")
         element = element[1]
         element = element.find_elements_by_tag_name("tr")
@@ -91,7 +91,7 @@ def clickViewSections(driver):
         else:
             return False
 
-    element = WebDriverWait(driver, 10).until(find3)
+    element = WebDriverWait(driver, 10).until(find)
 
     #use tabs to select the button
     i = 14  # number of times to press TAB
@@ -105,14 +105,14 @@ def clickViewSections(driver):
 
 def checkWaitListValues(driver):
 
-    def find4(driver):
+    def find(driver):
         element = driver.find_elements_by_class_name("dddefault")
         if len(element) > 60:
             return element
         else:
             return False
 
-    element = WebDriverWait(driver, 10).until(find4)
+    element = WebDriverWait(driver, 10).until(find)
 
     WLcapacity = element[55].text   #number of waitlist spots filled
     WLactive = element[56].text     #number of waitlist spots available
@@ -132,7 +132,7 @@ def sendEmailToMe():
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(fromaddr, "*****")
+    server.login(fromaddr, "This is an emergency!")
     text = msg.as_string()
     server.sendmail(fromaddr, toaddr, text)
     server.quit()
@@ -169,4 +169,5 @@ def runScraper():
 
     driver.close()
 
-runScraper()
+if __name__ == "__main__":
+    runScraper()
