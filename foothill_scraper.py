@@ -9,58 +9,49 @@ from email.mime.text import MIMEText
 
 import threading
 
-#runs scraper every 15 minutes
-def runScraper():
-    threading.Timer(900.0, runScraper).start()
-
-    #go to website
-    driver = webdriver.Chrome('/usr/local/bin/chromedriver')
+def goToFootHillWEB(driver): 
     driver.get("https://myportal.fhda.edu/cp/home/displaylogin")
 
-
-    try:
-        assert "MyPortal" in driver.title
-    except:
-        print("Wrong website probably")
-
-    #login
+def loginToFootHill(driver):
     userName = driver.find_element_by_id("user")
-    userName.send_keys("********")
+    userName.send_keys("*****")
+
     password = driver.find_element_by_id("pass")
-    password.send_keys("*************")
+    password.send_keys("*****")
 
-    login = driver.find_element_by_name("login_btn").click()
+    driver.find_element_by_name("login_btn").click()
 
-    #navigate to registration tab
+def clickRegistrationTab(driver):
     driver.implicitly_wait(10)
-    allTabs = driver.find_element_by_id("tabs_tda")
-    offTabs = allTabs.find_elements_by_class_name("taboff")
-    offTabs[2].click()
+    element = driver.find_element_by_id("tabs_tda")
+    element = element.find_elements_by_class_name("taboff")
+    element[2].click()
 
-    #click add or drop classes
-    driver.implicitly_wait(5)
-    placeHolder = driver.find_element_by_id("content")
-    placeHolder = placeHolder.find_element_by_id("channel")
-    placeHolder = placeHolder.find_element_by_id("p_chan_text")
-    placeHolder = placeHolder.find_element_by_class_name("TargetedSelfServiceMenu")
-    tabs = placeHolder.find_elements_by_tag_name('a')
-    tabs[3].click()
-
-    #change drop down option and submit
+def clickAddOrDropClasses(driver):
     driver.implicitly_wait(10)
+    element = driver.find_element_by_id("content")
+    element = element.find_element_by_id("channel")
+    element = element.find_element_by_id("p_chan_text")
+    element = element.find_element_by_class_name("TargetedSelfServiceMenu")
+    element = element.find_elements_by_tag_name('a')
+    element[3].click()
 
-    driver.switch_to_frame("content")
+def switchFrame(driver, frameName):
+    driver.switch_to_frame(frameName)
+    return driver
 
-    element = driver.find_element_by_class_name("pagebodydiv")
-    placeHolder = element.find_element_by_class_name("dataentrytable")
-    placeHolder = placeHolder.find_element_by_name("term_in")
-    placeHolder.click()
-    placeHolder = placeHolder.find_elements_by_tag_name("option")
-    placeHolder[1].click()
+def selectSpringFootHillDropDown(driver):
+    
+    submit = driver.find_element_by_class_name("pagebodydiv")
+    element = submit.find_element_by_class_name("dataentrytable")
+    element = element.find_element_by_name("term_in")
+    element.click()
+    element = element.find_elements_by_tag_name("option")
+    element[1].click()
 
-    element = element.find_element_by_tag_name("form").submit()
+    submit.find_element_by_tag_name("form").submit()
 
-    #click class search
+def clickClassSearch(driver):
 
     def find1(driver):
         element = driver.find_element_by_xpath("//input[@name='REG_BTN' and @value='Class Search']")
@@ -72,7 +63,7 @@ def runScraper():
     element = WebDriverWait(driver, 10).until(find1)
     element.click()
 
-    #choose computer science
+def chooseComputerScienceOption(driver):
 
     def find2(driver):
         element = driver.find_element_by_xpath("//option[@value='C S']")
@@ -84,14 +75,13 @@ def runScraper():
     element = WebDriverWait(driver, 10).until(find2)
     element.click()
 
-    #click course search
+def clickCourseSearch(driver):
     element = driver.find_element_by_xpath("//input[@name='SUB_BTN' and @value='Course Search']")
     element.click()
 
-    #click view sections
+def clickViewSections(driver):
 
-        #check that the right button has loaded
-
+    #check that the right button has loaded
     def find3(driver):
         element = driver.find_elements_by_class_name("datadisplaytable")
         element = element[1]
@@ -103,10 +93,8 @@ def runScraper():
 
     element = WebDriverWait(driver, 10).until(find3)
 
-        #use tabs to select the button
-
+    #use tabs to select the button
     i = 14  # number of times to press TAB
-
     tabs = ActionChains(driver) 
 
     for x in range(i):
@@ -115,8 +103,8 @@ def runScraper():
 
     tabs.perform()
 
+def checkWaitListValues(driver):
 
-    #check values of waitlisted classes
     def find4(driver):
         element = driver.find_elements_by_class_name("dddefault")
         if len(element) > 60:
@@ -126,32 +114,59 @@ def runScraper():
 
     element = WebDriverWait(driver, 10).until(find4)
 
-    WLcapacity = element[55].text
-    WLactive = element[56].text
+    WLcapacity = element[55].text   #number of waitlist spots filled
+    WLactive = element[56].text     #number of waitlist spots available
 
-    print(WLcapacity)
-    print(WLactive)
-    print('\n')
+    return WLcapacity + WLactive
 
-    if WLactive != "10" or WLcapacity != "10": 
-        fromaddr = "han.lou.mitchell@gmail.com"
-        toaddr = "han.lou.mitchell@gmail.com"
-        msg = MIMEMultipart()
-        msg['From'] = fromaddr
-        msg['To'] = toaddr
-        msg['Subject'] = "CS OPENING"
-        
-        body = "CHECK THE WEBSITE"
-        msg.attach(MIMEText(body, 'plain'))
-        
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(fromaddr, "*********************")
-        text = msg.as_string()
-        server.sendmail(fromaddr, toaddr, text)
-        server.quit()
+def sendEmailToMe():
+    fromaddr = "han.lou.mitchell@gmail.com"
+    toaddr = "han.lou.mitchell@gmail.com"
+    msg = MIMEMultipart()
+    msg['From'] = fromaddr
+    msg['To'] = toaddr
+    msg['Subject'] = "CS OPENING"
+    
+    body = "CHECK THE WEBSITE"
+    msg.attach(MIMEText(body, 'plain'))
+    
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(fromaddr, "*****")
+    text = msg.as_string()
+    server.sendmail(fromaddr, toaddr, text)
+    server.quit()
+
+def runScraper():
+    
+    #runs loop every 15 minutes
+    threading.Timer(900.0, runScraper).start()
+
+    driver = webdriver.Chrome('/usr/local/bin/chromedriver')
+
+    goToFootHillWEB(driver)
+    loginToFootHill(driver)
+
+    clickRegistrationTab(driver)
+    clickAddOrDropClasses(driver)
+
+    driver = switchFrame(driver, "content")
+    
+    selectSpringFootHillDropDown(driver)
+    clickClassSearch(driver)
+    
+    chooseComputerScienceOption(driver)
+    clickCourseSearch(driver)
+
+    clickViewSections(driver)
+
+    total = checkWaitListValues(driver)
+    print(total)
+
+    #send email if either waitlist variable changes
+    if total != "1010": 
+        sendEmailToMe()
 
     driver.close()
 
-#runs file
 runScraper()
