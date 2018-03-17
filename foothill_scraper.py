@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 
 import threading
 
-def errorHandlingFunction(functionName):
+def errorHandlingFunction(functionName, driver):
     print("\nERROR in " + functionName + "\n")
     driver.close()
 
@@ -17,7 +17,7 @@ def goToFootHillWEB(driver):
     try:
         driver.get("https://myportal.fhda.edu/cp/home/displaylogin")
     except:
-        errorHandlingFunction("goToFootHillWeb")
+        errorHandlingFunction("goToFootHillWeb", driver)
 
 def loginToFootHill(driver):
     try:
@@ -29,7 +29,7 @@ def loginToFootHill(driver):
 
         driver.find_element_by_name("login_btn").click()
     except:
-        errorHandlingFunction("loginToFootHill")
+        errorHandlingFunction("loginToFootHill", driver)
 
 def clickRegistrationTab(driver):
     try:
@@ -38,7 +38,7 @@ def clickRegistrationTab(driver):
         element = element.find_elements_by_class_name("taboff")
         element[2].click()
     except:
-        errorHandlingFunction("clickRegistrationTab")
+        errorHandlingFunction("clickRegistrationTab", driver)
 
 def clickAddOrDropClasses(driver):
     try:
@@ -50,14 +50,14 @@ def clickAddOrDropClasses(driver):
         element = element.find_elements_by_tag_name('a')
         element[3].click()
     except:
-        errorHandlingFunction("clickAddOrDropClasses")
+        errorHandlingFunction("clickAddOrDropClasses", driver)
 
 def switchFrame(driver, frameName):
     try:
         driver.switch_to_frame(frameName)
         return driver
     except:
-        errorHandlingFunction("switchFrame")
+        errorHandlingFunction("switchFrame", driver)
 
 def selectSpringFootHillDropDown(driver):
     try:
@@ -70,7 +70,7 @@ def selectSpringFootHillDropDown(driver):
 
         submit.find_element_by_tag_name("form").submit()
     except:
-        errorHandlingFunction("selectSpringFootHillDropDown")
+        errorHandlingFunction("selectSpringFootHillDropDown", driver)
         
 def clickClassSearch(driver):
     try:
@@ -84,7 +84,7 @@ def clickClassSearch(driver):
         element = WebDriverWait(driver, 10).until(find)
         element.click()
     except:
-        errorHandlingFunction("clickClassSearch")
+        errorHandlingFunction("clickClassSearch", driver)
 
 def chooseComputerScienceOption(driver):
     try:
@@ -98,14 +98,14 @@ def chooseComputerScienceOption(driver):
         element = WebDriverWait(driver, 10).until(find)
         element.click()
     except:
-        errorHandlingFunction("clickClassSearch")
+        errorHandlingFunction("clickClassSearch", driver)
 
 def clickCourseSearch(driver):
     try:
         element = driver.find_element_by_xpath("//input[@name='SUB_BTN' and @value='Course Search']")
         element.click()
     except:
-        errorHandlingFunction("clickCourseSearch")
+        errorHandlingFunction("clickCourseSearch", driver)
 
 def clickViewSections(driver):
     try:
@@ -130,7 +130,7 @@ def clickViewSections(driver):
 
         tabs.perform()
     except:
-        errorHandlingFunction("clickViewSections")
+        errorHandlingFunction("clickViewSections", driver)
 
 def checkWaitListValues(driver):
     try:
@@ -143,14 +143,14 @@ def checkWaitListValues(driver):
 
         element = WebDriverWait(driver, 10).until(find)
 
-        WLcapacity = element[55].text   #number of waitlist spots filled
-        WLactive = element[56].text     #number of waitlist spots available
+        WLactive = element[56].text   #number of waitlist spots filled
+        WLremaining = element[57].text     #number of waitlist spots available
 
-        return WLcapacity + WLactive
+        return WLactive + WLremaining
     except:
-        errorHandlingFunction("checkWaitListValues")
+        errorHandlingFunction("checkWaitListValues", driver)
 
-def sendEmailToMe():
+def sendEmailToMe(driver):
     try:
         fromaddr = "han.lou.mitchell@gmail.com"
         toaddr = "han.lou.mitchell@gmail.com"
@@ -169,7 +169,7 @@ def sendEmailToMe():
         server.sendmail(fromaddr, toaddr, text)
         server.quit()
     except:
-        errorHandlingFunction("sendEmailToMe")
+        errorHandlingFunction("sendEmailToMe", driver)
 
 def runScraper():
     
@@ -177,6 +177,7 @@ def runScraper():
     threading.Timer(900.0, runScraper).start()
     
     try:
+        #.Chrome('/usr/local/bin/chromedriver') for laptop
         driver = webdriver.Chrome()
 
         goToFootHillWEB(driver)
@@ -199,8 +200,8 @@ def runScraper():
         print(total)
 
         #send email if either waitlist variable changes
-        if total != "1010": 
-            sendEmailToMe()
+        if total != "100": 
+            sendEmailToMe(driver)
 
         driver.close()
 
