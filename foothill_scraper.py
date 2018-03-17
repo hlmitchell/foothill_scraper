@@ -243,12 +243,12 @@ def changeActionToWaitList(driver):
 
 def runScraper():
     
-    #runs loop every 15 minutes
-    threading.Timer(900.0, runScraper).start()
+    #runs loop every 5 minutes
+    threading.Timer(300.0, runScraper).start()
     
     try:
         #.Chrome('/usr/local/bin/chromedriver') for laptop
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome('/usr/local/bin/chromedriver')
 
         goToFootHillWEB(driver)
         loginToFootHill(driver)
