@@ -1,1 +1,1 @@
-This is for my personal use. It is a specialized scraper that checks the waitlist status of a particular class every 15 minutes. 
+This is for my personal use. It is a specialized scraper that checks the waitlist status of a particular class every 5 minutes. If a person drops the class, my scraper then signs me up for the class and sends me an email. 
