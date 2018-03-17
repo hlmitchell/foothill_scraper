@@ -143,10 +143,16 @@ def checkWaitListValues(driver):
 
         element = WebDriverWait(driver, 10).until(find)
 
-        WLactive = element[56].text   #number of waitlist spots filled
+        crn = element[43].text             #crn of class
+        WLactive = element[56].text        #number of waitlist spots filled
         WLremaining = element[57].text     #number of waitlist spots available
 
+        if WLactive + WLremaining != "100":
+            sendEmailToMe(driver)
+            return crn
+
         return WLactive + WLremaining
+        
     except:
         errorHandlingFunction("checkWaitListValues", driver)
 
@@ -170,6 +176,70 @@ def sendEmailToMe(driver):
         server.quit()
     except:
         errorHandlingFunction("sendEmailToMe", driver)
+
+def clickRegister(driver):
+
+    try:
+
+        def find(driver):
+            element = driver.find_element_by_xpath("//input[@name='ADD_BTN' and @value='Register']")
+            if element:
+                return element
+            else:
+                return False
+
+        element = WebDriverWait(driver, 10).until(find)
+        element.click()
+
+    except:
+        errorHandlingFunction("clickRegister", driver)
+
+def inputCRN(driver, crn):
+
+    try:
+
+        def find(driver):
+            element = driver.find_element_by_xpath("//input[@id='crn_id1']")
+            if element:
+                return element
+            else:
+                return False
+
+        blankField = WebDriverWait(driver, 10).until(find)
+        blankField.send_keys(crn)
+
+    except:
+        errorHandlingFunction("inputCRN", driver)
+
+def clickSubmitChanges(driver):
+
+    try:
+
+        def find(driver):
+            element = driver.find_element_by_xpath("//input[@name='REG_BTN' and @value='Submit Changes']")
+            if element:
+                return element
+            else:
+                return False
+
+        element = WebDriverWait(driver, 10).until(find)
+        element.click()
+
+    except:
+        errorHandlingFunction("clickSubmitChanges", driver)
+
+def changeActionToWaitList(driver):
+
+    try:
+
+        element = driver.find_element_by_xpath("//select[@id='waitaction_id1']")
+        element.click()
+        element = element.find_element_by_xpath("//option[@value='WL']")
+        element.click()
+
+    except:
+        errorHandlingFunction("changeActionToWaitList", driver)
+
 
 def runScraper():
     
@@ -196,13 +266,18 @@ def runScraper():
 
         clickViewSections(driver)
 
-        total = checkWaitListValues(driver)
-        print(total)
+        crn = checkWaitListValues(driver)
 
-        #send email if either waitlist variable changes
-        if total != "100": 
-            sendEmailToMe(driver)
+        if crn != "100":
+            print("Signing up for class......")
 
+            clickRegister(driver)
+            inputCRN(driver, crn)
+            clickSubmitChanges(driver)
+            changeActionToWaitList(driver)
+            clickSubmitChanges(driver)
+
+        print(crn)
         driver.close()
 
     except:
