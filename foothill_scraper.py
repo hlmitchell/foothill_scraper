@@ -155,6 +155,7 @@ def checkWaitListValues(driver):
         
     except:
         errorHandlingFunction("checkWaitListValues", driver)
+        return "100"
 
 def sendEmailToMe(driver):
     try:
